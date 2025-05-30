@@ -1,16 +1,16 @@
-from dotenv import load_dotenv
-import os
-import sys
-
-import random 
-
-
-
-# .env 로드
-load_dotenv()
-
-os.getenv("OPENAI_API_KEY")
+from utils.functions import chat
 
 
 if __name__ == '__main__':
-    pass
+    while True :
+        input_msg = input("프로그램 실행 목적을 입력하세요 (0: 종료, 1: 감정등록, 2: 감정캘린더확인)")
+        if input_msg == "1" :
+            chat()
+        elif input_msg == "2" :
+            pass
+        elif input_msg == "0" :
+            print("프로그램을 종료합니다.")
+            break
+        else :
+            print("1이나 2 중 하나의 값을 입력해주시기 바랍니다.")
+            continue

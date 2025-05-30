@@ -1,2 +1,4 @@
 dotenv
 PyQt5
+openai
+pathlib
