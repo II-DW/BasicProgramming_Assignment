@@ -1,5 +1,5 @@
 from utils.functions import chat
-
+from ui import start_App
 
 if __name__ == '__main__':
     while True :
@@ -7,7 +7,7 @@ if __name__ == '__main__':
         if input_msg == "1" :
             chat()
         elif input_msg == "2" :
-            pass
+            start_App()
         elif input_msg == "0" :
             print("프로그램을 종료합니다.")
             break

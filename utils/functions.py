@@ -3,14 +3,21 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 import json 
+import calendar
+import datetime
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 feelings_L = ["기쁨", "두려움", "슬픔", "지침", "짜증", "혐오"]
 
-def load_feeling () :
+def load_feeling (year, month) :
     data = json.loads(Path('data.json').read_text())
-    return data
+    response = {}
+    for key in data.keys() :
+        if key.startswith(f"{year}{month:02d}") :
+            response[key[6:8]] = data[key]
+            
+    return response
 
 def save_feeling (date, feeling) :
     data = json.loads(Path('data.json').read_text())
@@ -48,44 +55,43 @@ def load_ai (diary_text) :
     - Only provide the analysis. Do not give any explanations or additional output.
     """
     
-    # client = OpenAI(
-    # base_url="https://openrouter.ai/api/v1",
-    # api_key=api_key,
-    # )
-    # while True :
-    #     try :
-    #         completion = client.chat.completions.create(
-    #         extra_headers={
-    #             "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-    #             "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
-    #         },
-    #         extra_body={},
-    #         model="deepseek/deepseek-r1-0528:free",
-    #         messages=[
-    #             {
-    #                 "role": "system",
-    #                 "content": system_prompt
-    #             },
-    #             {
-    #             "role": "user",
-    #             "content": diary_text
-    #             }
-    #         ]
-    #         )
-    #         try:
-    #             response = [float(feelings.split(':')[1]) for feelings in completion.choices[0].message.content.split("\n")]
-    #         except Exception as e :
-    #             print(f"에러 발생: {e}")
-    #             print("⚠️ LLM이 제대로 된 값을 제공하지 않았습니다. 재시도 중입니다.")
-    #             continue
-    #         if len(response) != 6 :
-    #             print("⚠️ LLM이 제대로 된 값을 제공하지 않았습니다. 재시도 중입니다.")
-    #             continue
-    #         return response
-    #     except Exception as e:
-    #         print(f"에러 발생: {e}")
-    #         return "⚠️ 감정 분석에 실패했습니다. API 제한을 확인해주세요."
-    return [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+    client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=api_key,
+    )
+    while True :
+        try :
+            completion = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+                "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+            },
+            extra_body={},
+            model="deepseek/deepseek-r1-0528:free",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                "role": "user",
+                "content": diary_text
+                }
+            ]
+            )
+            try:
+                response = [float(feelings.split(':')[1]) for feelings in completion.choices[0].message.content.split("\n")]
+            except Exception as e :
+                print(f"에러 발생: {e}")
+                print("⚠️ LLM이 제대로 된 값을 제공하지 않았습니다. 재시도 중입니다.")
+                continue
+            if len(response) != 6 :
+                print("⚠️ LLM이 제대로 된 값을 제공하지 않았습니다. 재시도 중입니다.")
+                continue
+            return response
+        except Exception as e:
+            print(f"에러 발생: {e}")
+            return "⚠️ 감정 분석에 실패했습니다. API 제한을 확인해주세요."
     
     
 
@@ -98,16 +104,28 @@ def chat () :
             print("잘못입력하셨습니다.")
             continue 
         
-        try :
+        try:
+            date_obj = datetime.datetime.strptime(input_msg, "%Y%m%d")
             date = int(input_msg)
-        except Exception as e:
-            print(e, "\n 제대로 다시 입력하세요")
+        except ValueError:
+            print("존재하지 않는 날짜입니다.")
             continue
         
         feeling_msg = input("오늘 어떤 일이 있었나요? \n")
         response = load_ai(feeling_msg)
         
-        save_feeling(date, feelings_L[response.index(max(response))])
+        save_feeling(date, response.index(max(response)))
+
+def return_label_nums (year, month) :
+    
+    # monthrange() → (해당 월의 첫날 요일, 해당 월의 총 일수)
+    first_weekday, num_days = calendar.monthrange(year, month) # 0 = 월요일, 6 = 일요일
+    if first_weekday == 6 : first_weekday = 1 
+    else : first_weekday += 2 # 1 = 일요일, 7 = 토요일
+
+    return first_weekday 
+
+
         
         
         
