@@ -118,12 +118,24 @@ def chat () :
 
 def return_label_nums (year, month) :
     
-    # monthrange() → (해당 월의 첫날 요일, 해당 월의 총 일수)
-    first_weekday, num_days = calendar.monthrange(year, month) # 0 = 월요일, 6 = 일요일
-    if first_weekday == 6 : first_weekday = 1 
-    else : first_weekday += 2 # 1 = 일요일, 7 = 토요일
+    first_weekday, num_days = calendar.monthrange(year, month)  # first_weekday: 0=월요일, 6=일요일
 
-    return first_weekday 
+    # 원래 start_date 계산
+    if first_weekday == 6:  # 일요일 시작이라면
+        start_date = 1
+    else:
+        start_date = first_weekday + 2
+
+    prev_year, prev_month = (year, month-1) if month != 1 else (year-1, 12)
+    prev_last_weekday, prev_last_day = calendar.monthrange(prev_year, prev_month)
+
+    prev_last_day_of_week = (prev_last_weekday + prev_last_day) % 7
+
+    # 만약 전월 마지막 요일이 토요일(5+1=6)이면 한 줄 추가
+    if prev_last_day_of_week == 6:
+        start_date += 7
+
+    return start_date
 
 
         
