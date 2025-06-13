@@ -11,7 +11,8 @@
 
 ### 초기 세팅
 #### 1. 모든 파일을 불러온 후, 가장 상위 경로에 .env에 OPENAI_API_KEY = "<YOUR KEY>" 형식으로 저장
-#### 2. app.py 실행
+#### 2. pip install -r requirements.txt 실행
+#### 3. app.py 실행
 
 ### 이후 cmd 창에 1 또는 2 입력
 
