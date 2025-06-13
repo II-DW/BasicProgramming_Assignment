@@ -24,7 +24,7 @@
 #### 2. 상단의 연, 월 변경해서 확인
 
 ### cf) 웹사이트 확인시 (웹사이트에서는 github에 commit된 data.json을 기반으로 합니다.)
-#### https://ii-dw.me/calendar 접속 및 확인
+#### https://ii-dw.me 접속 및 상단 calander 메뉴를 통해 확인
 
 ## 실행 목적 1: 감정 일기 작성
 
